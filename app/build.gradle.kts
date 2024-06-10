@@ -62,6 +62,7 @@ dependencies {
 
     //Coroutine
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+    implementation ("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
 
     //DaggerHilt
     val hiltVersion = "2.50"
