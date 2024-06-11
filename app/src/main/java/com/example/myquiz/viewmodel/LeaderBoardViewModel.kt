@@ -3,10 +3,13 @@ package com.example.myquiz.viewmodel
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.myquiz.DicionarioTemas
 import com.example.myquiz.model.LeaderBordRepository
 import com.example.myquiz.model.Player
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,6 +22,9 @@ class LeaderBoardViewModel @Inject constructor(private val lbRepository: LeaderB
         Log.d("LeaderBoardViewModel", "Player adicionado: $nome, Pontos: $pontos, Tema: ${DicionarioTemas.GetThemeById(tema)}")
     }
     fun refresh() {
-        boardLiveData.value = lbRepository.players
+        viewModelScope.launch(Dispatchers.IO) {
+            boardLiveData.value = lbRepository.players
+        }
+
     }
 }
