@@ -10,5 +10,5 @@ interface QuizAPI {
         @Query("category") categoria: Int,
         @Query("difficulty") dif: String,
         @Query("type") tipo: String? = "multiple",
-        ): List<Question>
+        ): QuizResponse
 }
