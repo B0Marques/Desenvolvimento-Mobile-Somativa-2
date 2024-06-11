@@ -45,4 +45,10 @@
     </string>
     <string name="new_game">New Game</string>
     <string name="leaderboard">Leaderboard</string>
+    <string name="cone_do_tema">Ícone do Tema</string>
+    <string name="question_text">Question_Text?</string>
+    <string name="d_fourth_answer">D) Fourth Answer</string>
+    <string name="c_third_answer">C) Third Answer</string>
+    <string name="b_second_answer">B) Second Answer</string>
+    <string name="a_first_answer">A) First Answer</string>
 </resources>
