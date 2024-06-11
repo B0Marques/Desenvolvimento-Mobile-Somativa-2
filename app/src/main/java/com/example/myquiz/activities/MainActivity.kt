@@ -29,11 +29,8 @@ class MainActivity : AppCompatActivity() {
         leaderBordRepository = AppModule().provideRepository(AppModule().provideDao(AppModule().provideDatabase(this)))
 
 
-        binding.id.text = "1"
-        addPlayer("Jefinho", 10, 20)
-        binding.id.text = "2"
-//        var mainMenu = Intent(this, MainMenuActivity::class.java);
-//        startActivity(mainMenu)
+        var mainMenu = Intent(this, QuestionActivity::class.java);
+        startActivity(mainMenu)
     }
     fun addPlayer(nome: String, pontos: Int, tema: Int) {
         leaderBordRepository.add(nome, pontos, tema)
