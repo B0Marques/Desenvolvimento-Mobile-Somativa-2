@@ -73,4 +73,14 @@ class QuestionActivity : AppCompatActivity() {
     fun showToast(message:String){
         Toast.makeText(this,message,Toast.LENGTH_SHORT).show()
     }
-}
+    fun getPoints(dif: String, tempo: Int): Int {
+        val pontosBase = when (dif) {
+            "easy" -> 10
+            "medium" -> 20
+            "hard" -> 30
+            else -> throw IllegalArgumentException("Dificuldade inválida")
+        }
+            val fatorTempo = if (tempo < 10) 2 else 1
+            return pontosBase * fatorTempo
+        }
+    }
