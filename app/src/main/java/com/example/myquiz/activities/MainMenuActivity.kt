@@ -1,5 +1,6 @@
 package com.example.myquiz.activities
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -21,6 +22,8 @@ class MainMenuActivity : AppCompatActivity() {
 
         binding.LeaderboardButton.setOnClickListener {
             //Go To Leaderboard theme select
+            val intent = Intent(this, ThemeSelectorActivity::class.java)
+            startActivity(intent)
         }
         binding.NewGameButton.setOnClickListener {
             //Go to new game theme select
