@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
 import android.widget.Button
+import android.widget.Chronometer
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
@@ -30,6 +32,8 @@ class QuestionActivity : AppCompatActivity() {
     private var timer:Long = 0
     private lateinit var handler:Handler
     private lateinit var runnable: Runnable
+    lateinit var chronometer: Chronometer
+
 
     private var pointsToAdd=0
 
@@ -74,9 +78,8 @@ class QuestionActivity : AppCompatActivity() {
             showToast("Right Answer")
             NextQuestion()
             //pointsToAdd += getPoints(questions[currentQuestion].dif,timer)
-            val answerTime:Long = ( System.currentTimeMillis()-timer)
-
-            Log.d("Timer", "Question right answer on: ${System.currentTimeMillis()}, ${timer}")
+            val answerTime:Long =  SystemClock.elapsedRealtime() - chronometer.base
+            Log.d("Timer", "Question right answer on: ${answerTime}")
             //Log.d("DEBUG", "Difference beetween: ${System.currentTimeMillis()} - ${timer} on time: ${answerTime}")
 
         }
@@ -110,11 +113,13 @@ class QuestionActivity : AppCompatActivity() {
         binding.answer3.text = answersToAdd[3]
         binding.answer4.text = answersToAdd[4]
 
-        timer = System.currentTimeMillis()
-        Log.d("Timer", "Question started on: ${timer}")
+
+        chronometer = Chronometer(this)
+        chronometer.base = SystemClock.elapsedRealtime()
+        chronometer.start()
 
     }
-    
+
     override fun onDestroy() {
         super.onDestroy()
         // Remover callbacks do handler para evitar vazamentos de memória
