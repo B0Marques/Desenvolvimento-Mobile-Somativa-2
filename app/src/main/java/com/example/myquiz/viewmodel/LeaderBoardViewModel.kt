@@ -11,8 +11,8 @@ import javax.inject.Inject
 class LeaderBoardViewModel @Inject constructor(private val lbRepository: LeaderBordRepository)
     : ViewModel() {
         val boardLiveData = MutableLiveData<List<Player>>()
-    fun add(nome: String, pontos: Int) {
-        lbRepository.add(nome, pontos)
+    fun add(nome: String, pontos: Int, tema: Int) {
+        lbRepository.add(nome, pontos, tema)
         boardLiveData.value = lbRepository.players
     }
     fun refresh() {

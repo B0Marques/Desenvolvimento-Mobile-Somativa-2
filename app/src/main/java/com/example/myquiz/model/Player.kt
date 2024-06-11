@@ -6,5 +6,6 @@ import androidx.room.PrimaryKey
 data class Player(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val nome: String,
-    val pontos: Int
+    val pontos: Int,
+    val tema: Int
 )
