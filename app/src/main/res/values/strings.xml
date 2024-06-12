@@ -51,4 +51,7 @@
     <string name="c_third_answer">C) Third Answer</string>
     <string name="b_second_answer">B) Second Answer</string>
     <string name="a_first_answer">A) First Answer</string>
+    <string name="name">Name</string>
+    <string name="start_game">Start Game</string>
+    <string name="insira_seu_nome">Insira seu nome:</string>
 </resources>

@@ -23,10 +23,13 @@ class MainMenuActivity : AppCompatActivity() {
         binding.LeaderboardButton.setOnClickListener {
             //Go To Leaderboard theme select
             val intent = Intent(this, ThemeSelectorActivity::class.java)
+            intent.putExtra("select_value",1)
             startActivity(intent)
         }
         binding.NewGameButton.setOnClickListener {
-            //Go to new game theme select
+            val intent = Intent(this, ThemeSelectorActivity::class.java)
+            intent.putExtra("select_value",0)
+            startActivity(intent)
         }
     }
 

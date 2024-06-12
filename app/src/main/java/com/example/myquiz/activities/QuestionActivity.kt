@@ -6,37 +6,40 @@ import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
-import android.widget.Button
+import android.view.View
 import android.widget.Chronometer
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import com.example.myquiz.DicionarioTemas
-import com.example.myquiz.R
 import com.example.myquiz.model.QuizClient
 import kotlinx.coroutines.launch
 import com.example.myquiz.databinding.ActivityQuestionBinding
 import com.example.myquiz.model.Question
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 class QuestionActivity : AppCompatActivity() {
-    lateinit var binding:ActivityQuestionBinding
-    private lateinit var questions:List<Question>
-    private var currentQuestion:Int = 0
-    private var questionTheme:Int = 20;
-    private lateinit var buttons:List<Button>
-    var rightQuestionLocation:Int = 0
+    private lateinit var binding:ActivityQuestionBinding
+    private var questions:List<Question> = mutableListOf()
 
-    private var timer:Long = 0
+    private var currentQuestion:Int = 0
+    private var questionTheme:Int = 20
+    private var rightQuestionLocation:Int = 0
+
     private lateinit var handler:Handler
     private lateinit var runnable: Runnable
-    lateinit var chronometer: Chronometer
+    private lateinit var chronometer: Chronometer
 
 
     private var pointsToAdd=0
 
+    private var firstTime:Boolean = true
+
+    private var playerName:String = "Joe"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,56 +50,117 @@ class QuestionActivity : AppCompatActivity() {
 
         handler = Handler(Looper.getMainLooper())
 
-        lifecycleScope.launch {
-            val getQuestions = QuizClient.getQuiz(10,questionTheme, "easy")
-            //binding.id.text = result.resultados[0].decodeHtml().pq
-            questions = getQuestions.resultados
-            ShowQuestion(questions[currentQuestion])
-        }
+        questionTheme = intent.getIntExtra("theme",20)
+
+        loadQuestions(questionTheme)
 
 
 
-        binding.answer1.setOnClickListener {
-            CheckAnswer(1)
-        }
-        binding.answer2.setOnClickListener {
-            CheckAnswer(2)
-        }
-        binding.answer3.setOnClickListener {
-            CheckAnswer(3)
-        }
-        binding.answer4.setOnClickListener {
-            CheckAnswer(4)
-        }
+        binding.startGame.setOnClickListener{
+            if(binding.editTextNome.text.toString() != "") {
+                Log.d("DEBUG","Start Game")
+                playerName = binding.editTextNome.text.toString()
+                showQuestion(questions[currentQuestion])
+                }
+            else{
+                    Log.d("DEBUG", "Nao tem como começar")
+                }
+            }
+
+
+
 
         //ShowQuestion(questions[currentQuestion])
 
+
+        setupAnswerButtons()
+    }
+    private fun setupAnswerButtons(){
+        binding.answer1.setOnClickListener {
+            checkAnswer(1)
+        }
+        binding.answer2.setOnClickListener {
+            checkAnswer(2)
+        }
+        binding.answer3.setOnClickListener {
+            checkAnswer(3)
+        }
+        binding.answer4.setOnClickListener {
+            checkAnswer(4)
+        }
+    }
+    private fun getQuestions(theme:Int){
+        lifecycleScope.launch {
+            val getEasyQuestions = QuizClient.getQuiz(10,theme, "easy")
+            questions += getEasyQuestions.resultados
+
+            delay(5000)
+            val getMediumQuestions = QuizClient.getQuiz(10,theme, "medium")
+            questions += getMediumQuestions.resultados
+
+            delay(5000)
+            val getHardQuestions = QuizClient.getQuiz(10,theme, "hard")
+            questions += getHardQuestions.resultados
+
+            questions = questions.shuffled()
+        }
+    }
+    private fun loadQuestions(theme: Int){
+        CoroutineScope(Dispatchers.IO).launch {
+            getQuestions(theme)
+            withContext(Dispatchers.Main){
+                disableForm(false)
+                showLoading(true)
+                delay(5000)
+                disableForm(true)
+                showLoading(false)
+            }
+
+        }
+    }
+    private fun showLoading(show:Boolean){
+        binding.loadingScreen.root.visibility = if(show) View.VISIBLE else View.GONE
+    }
+    private fun disableForm(show:Boolean){
+        binding.playerForm.visibility=if(show) View.VISIBLE else View.GONE
     }
 
-    fun CheckAnswer(button:Int){
+    private fun checkAnswer(button:Int){
         if(button == rightQuestionLocation){
             showToast("Right Answer")
-            NextQuestion()
-            //pointsToAdd += getPoints(questions[currentQuestion].dif,timer)
-            val answerTime:Long =  SystemClock.elapsedRealtime() - chronometer.base
-            Log.d("Timer", "Question right answer on: ${answerTime}")
-            //Log.d("DEBUG", "Difference beetween: ${System.currentTimeMillis()} - ${timer} on time: ${answerTime}")
+            val answerTime:Long =  (SystemClock.elapsedRealtime() - chronometer.base)/1000
+            Log.d("Timer", "Question right answer on: $answerTime")
+            pointsToAdd += getPoints(questions[currentQuestion].dif, answerTime.toInt())
+            Log.d("Points To Add", "$pointsToAdd")
 
+            nextQuestion()
         }
         else{
             showToast("Wrong Answer")
         }
     }
-    fun NextQuestion(){
+
+    private fun nextQuestion(){
         currentQuestion += 1
-        ShowQuestion(questions[currentQuestion])
+        showQuestion(questions[currentQuestion])
     }
-    fun ShowQuestion(question: Question){
+    private fun showQuestion(question: Question){
+        CoroutineScope(Dispatchers.IO).launch {
+            withContext(Dispatchers.Main){
+               if(binding.playerForm.visibility == View.VISIBLE) {
+                   disableForm(false)
+                    showScreen(true)
+               }
+
+            }
+
+        }
+
         binding.questionText.text = question.decodeHtml().pq
         binding.themeIcon.setImageResource(DicionarioTemas.GetThemeIcon(questionTheme)!!)
-        var answersToAdd = mutableListOf<String>("","","","")
+        val answersToAdd = mutableListOf("","","","")
         rightQuestionLocation = Random.nextInt(1,4)
-        var wrongQuestions:Int = 0;
+        var wrongQuestions = 0
         for(i in 1..4){
             if(i == rightQuestionLocation) {
                 answersToAdd.add(i,question.decodeHtml().correta)
@@ -119,16 +183,32 @@ class QuestionActivity : AppCompatActivity() {
         chronometer.start()
 
     }
+    private fun showScreen(show:Boolean){
+        if(!show) {
+            binding.questionText.visibility = View.GONE
+            binding.card1.visibility = View.GONE
+            binding.card2.visibility = View.GONE
+            binding.card3.visibility = View.GONE
+            binding.card4.visibility = View.GONE
+            binding.themeIcon.visibility = View.GONE
+        }else{
+            binding.questionText.visibility = View.VISIBLE
+            binding.card1.visibility = View.VISIBLE
+            binding.card2.visibility = View.VISIBLE
+            binding.card3.visibility = View.VISIBLE
+            binding.card4.visibility = View.VISIBLE
+            binding.themeIcon.visibility = View.VISIBLE
+        }
+    }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Remover callbacks do handler para evitar vazamentos de memória
         handler.removeCallbacks(runnable)
     }
-    fun showToast(message:String){
+    private fun showToast(message:String){
         Toast.makeText(this,message,Toast.LENGTH_SHORT).show()
     }
-    fun getPoints(dif: String, tempo: Int): Int {
+    private fun getPoints(dif: String, tempo: Int): Int {
         val pontosBase = when (dif) {
             "easy" -> 10
             "medium" -> 20

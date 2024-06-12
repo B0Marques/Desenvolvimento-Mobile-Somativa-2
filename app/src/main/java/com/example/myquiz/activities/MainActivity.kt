@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         leaderBordRepository = AppModule().provideRepository(AppModule().provideDao(AppModule().provideDatabase(this)))
 
 
-        var mainMenu = Intent(this, QuestionActivity::class.java);
+        var mainMenu = Intent(this, MainMenuActivity::class.java);
         startActivity(mainMenu)
     }
     fun addPlayer(nome: String, pontos: Int, tema: Int) {
