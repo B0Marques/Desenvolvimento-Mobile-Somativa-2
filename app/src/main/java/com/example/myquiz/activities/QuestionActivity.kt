@@ -1,5 +1,6 @@
 package com.example.myquiz.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -10,16 +11,20 @@ import android.view.View
 import android.widget.Chronometer
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import com.example.myquiz.AppModule
 import com.example.myquiz.DicionarioTemas
 import com.example.myquiz.model.QuizClient
 import kotlinx.coroutines.launch
 import com.example.myquiz.databinding.ActivityQuestionBinding
+import com.example.myquiz.model.LeaderBordRepository
+import com.example.myquiz.model.Player
 import com.example.myquiz.model.Question
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 import kotlin.random.Random
 
 class QuestionActivity : AppCompatActivity() {
@@ -41,6 +46,9 @@ class QuestionActivity : AppCompatActivity() {
 
     private var playerName:String = "Joe"
 
+    @Inject
+    lateinit var leaderBordRepository: LeaderBordRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -55,12 +63,14 @@ class QuestionActivity : AppCompatActivity() {
         loadQuestions(questionTheme)
 
 
+        leaderBordRepository = AppModule().provideRepository(AppModule().provideDao(AppModule().provideDatabase(this)))
 
         binding.startGame.setOnClickListener{
             if(binding.editTextNome.text.toString() != "") {
                 Log.d("DEBUG","Start Game")
                 playerName = binding.editTextNome.text.toString()
                 showQuestion(questions[currentQuestion])
+                Log.d("DEBUG", "Nome: ${playerName}")
                 }
             else{
                     Log.d("DEBUG", "Nao tem como começar")
@@ -129,14 +139,19 @@ class QuestionActivity : AppCompatActivity() {
         if(button == rightQuestionLocation){
             showToast("Right Answer")
             val answerTime:Long =  (SystemClock.elapsedRealtime() - chronometer.base)/1000
-            Log.d("Timer", "Question right answer on: $answerTime")
+
             pointsToAdd += getPoints(questions[currentQuestion].dif, answerTime.toInt())
-            Log.d("Points To Add", "$pointsToAdd")
+
 
             nextQuestion()
         }
         else{
             showToast("Wrong Answer")
+            leaderBordRepository.add(playerName,pointsToAdd,questionTheme)
+            Log.d("DEBUG","Leaderboard inserted user: ${playerName}, points: ${pointsToAdd}, theme id: ${questionTheme}")
+            val intent = Intent(this, Leaderboard_Activity::class.java)
+            intent.putExtra("theme",questionTheme)
+            startActivity(intent)
         }
     }
 

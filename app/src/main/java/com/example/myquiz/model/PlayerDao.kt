@@ -10,4 +10,7 @@ interface PlayerDao {
 
     @Query("SELECT * FROM players ORDER BY pontos DESC")
     fun getAllPlayers(): List<Player>
+
+    @Query("Select * FROM players WHERE tema = :theme ORDER BY pontos DESC")
+    fun getAllByTheme(theme:Int):List<Player>
 }

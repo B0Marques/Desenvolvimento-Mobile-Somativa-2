@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myquiz.DicionarioTemas
 import com.example.myquiz.R
 import com.example.myquiz.ThemeAdapter
+import com.example.myquiz.model.LeaderBordRepository
+import javax.inject.Inject
 
 class ThemeSelectorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,7 +23,8 @@ class ThemeSelectorActivity : AppCompatActivity() {
 
         var selectedTheme:String
 
-        val selection = intent.getIntExtra("selection_value",0)
+        val selection = intent.getIntExtra("select_value",0)
+
 
 
 
@@ -43,22 +46,31 @@ class ThemeSelectorActivity : AppCompatActivity() {
          */
         recyclerView.adapter =ThemeAdapter(themes,object : ThemeAdapter.OnThemeClickListener{
             override fun onThemeClick(view: View, position: Int) {
+                /*
                 val themeSelected:Int = themes[position]
                 val intent = Intent(this@ThemeSelectorActivity, QuestionActivity::class.java)
 
                 intent.putExtra("theme",themeSelected)
                 startActivity(intent)
 
+                 */
+                changeActivity(selection,themes[position])
+
             }
 
         })
 
     }
+    @SuppressLint("SuspiciousIndentation")
     fun changeActivity(selection:Int, theme:Int){
+        /*
         val newActivity = Intent(this,QuestionActivity::class.java)
         newActivity.putExtra("theme",theme)
         startActivity(newActivity)
-        /*
+
+         */
+        Log.d("DEBUG", "${selection}")
+
         if(selection==0){
         val newActivity = Intent(this,QuestionActivity::class.java)
             newActivity.putExtra("theme",theme)
@@ -70,7 +82,7 @@ class ThemeSelectorActivity : AppCompatActivity() {
             startActivity(newActivity)
         }
 
-         */
+
     }
 
     override fun onResume() {
