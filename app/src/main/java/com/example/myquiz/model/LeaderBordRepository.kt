@@ -11,4 +11,9 @@ class LeaderBordRepository @Inject constructor(
         playerDao.insertPlayer(player)
         players = playerDao.getAllPlayers()
     }
+
+
+    fun getByTheme(theme:Int):List<Player>{
+        return playerDao.getAllByTheme(theme)
+    }
 }

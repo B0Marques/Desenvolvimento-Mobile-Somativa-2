@@ -54,4 +54,5 @@
     <string name="name">Name</string>
     <string name="start_game">Start Game</string>
     <string name="insira_seu_nome">Insira seu nome:</string>
+    <string name="leaderboard_name_text">Leaderboard</string>
 </resources>

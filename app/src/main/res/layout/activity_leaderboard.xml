@@ -15,19 +15,26 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/Leaderboard_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Leaderboard"
+            android:gravity="center"
+            android:text="@string/leaderboard_name_text"
             android:textSize="24sp"
-            android:textStyle="bold"
-            android:gravity="center"/>
+            android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/leaderboard_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <ListView
             android:id="@+id/leaderboard_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:divider="@android:color/darker_gray"
-            android:dividerHeight="0.5dp"/>
+            android:dividerHeight="0.5dp"
+            android:visibility="gone" />
 
     </LinearLayout>
 
